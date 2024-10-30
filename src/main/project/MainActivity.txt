@@ -1,0 +1,55 @@
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var counterReceiver: CounterReceiver
+    private var counterService: CounterService? = null
+    private var counter = 0
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            counterService = (service as CounterService.LocalBinder).getService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            counterService = null
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val counterText = findViewById<TextView>(R.id.counterText)
+        val incrementButton = findViewById<Button>(R.id.incrementButton)
+        val fragmentButton = findViewById<Button>(R.id.openFragmentButton)
+
+        counterReceiver = CounterReceiver.registerReceiver(this)
+        counterReceiver.getCounterLiveData().observe(this) { updatedCounter ->
+            counter = updatedCounter
+            counterText.text = counter.toString()
+        }
+
+        incrementButton.setOnClickListener {
+            counter++
+            counterService?.updateCounter(counter)
+        }
+
+        fragmentButton.setOnClickListener {
+            startActivity(Intent(this, FragmentActivity::class.java))
+        }
+
+        Intent(this, CounterService::class.java).also {
+            bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(serviceConnection)
+        unregisterReceiver(counterReceiver)
+    }
+}

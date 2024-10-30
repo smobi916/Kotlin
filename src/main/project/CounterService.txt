@@ -1,0 +1,30 @@
+package com.example.project
+
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+
+class CounterService : Service() {
+
+    companion object {
+        const val ACTION_COUNTER_UPDATED = "com.example.ACTION_COUNTER_UPDATED"
+        const val EXTRA_COUNTER = "counter"
+    }
+
+    private var counter = 0
+
+    override fun onBind(intent: Intent?): IBinder {
+        return LocalBinder()
+    }
+
+    inner class LocalBinder : Binder() {
+        fun getService(): CounterService = this@CounterService
+    }
+
+    fun updateCounter(newCounter: Int) {
+        counter = newCounter
+        val intent = Intent(ACTION_COUNTER_UPDATED)
+        intent.putExtra(EXTRA_COUNTER, counter)
+        sendBroadcast(intent)
+    }
+}

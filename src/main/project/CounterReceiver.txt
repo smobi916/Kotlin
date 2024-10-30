@@ -1,0 +1,28 @@
+package com.example.project
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+
+class CounterReceiver : BroadcastReceiver() {
+
+    private val counterLiveData = MutableLiveData<Int>()
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        if (intent?.action == CounterService.ACTION_COUNTER_UPDATED) {
+            val counter = intent.getIntExtra(CounterService.EXTRA_COUNTER, 0)
+            counterLiveData.postValue(counter)
+        }
+    }
+
+    fun getCounterLiveData(): LiveData<Int> = counterLiveData
+
+    companion object {
+        fun registerReceiver(context: Context): CounterReceiver {
+            val receiver = CounterReceiver()
+            val filter = IntentFilter(CounterService.ACTION_COUNTER_UPDATED)
+            context.registerReceiver(receiver, filter)
+            return receiver
+        }
+    }
+}

@@ -1,0 +1,42 @@
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+
+class CounterFragment : Fragment() {
+
+    private lateinit var counterReceiver: CounterReceiver
+    private var counter = 0
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        counterReceiver = CounterReceiver.registerReceiver(context)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_counter, container, false)
+        val counterText = view.findViewById<TextView>(R.id.counterText)
+        val incrementButton = view.findViewById<Button>(R.id.incrementButton)
+
+        counterReceiver.getCounterLiveData().observe(viewLifecycleOwner) { updatedCounter ->
+            counter = updatedCounter
+            counterText.text = counter.toString()
+        }
+
+        incrementButton.setOnClickListener {
+            counter++
+            requireActivity().startService(
+                Intent(requireContext(), CounterService::class.java).apply {
+                    putExtra(CounterService.EXTRA_COUNTER, counter)
+                }
+            )
+        }
+        return view
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        requireActivity().unregisterReceiver(counterReceiver)
+    }
+}
