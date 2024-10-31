@@ -1,0 +1,60 @@
+import android.graphics.Color
+import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Switch
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
+data class Item(var text: String, var isChecked: Boolean)
+
+class MainActivity : AppCompatActivity() {
+
+    private val itemList = MutableList(20) { Item("OFF", false) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val recyclerView = RecyclerView(this).apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = ItemAdapter(itemList)
+        }
+        setContentView(recyclerView)
+    }
+
+    inner class ItemAdapter(private val items: List<Item>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+
+        inner class ItemViewHolder(val layout: LinearLayout) : RecyclerView.ViewHolder(layout) {
+            val textView: TextView = TextView(this@MainActivity).apply { textSize = 18f }
+            val switchView: Switch = Switch(this@MainActivity)
+            init {
+                layout.addView(textView)
+                layout.addView(switchView)
+                layout.orientation = LinearLayout.HORIZONTAL
+                layout.setPadding(16, 16, 16, 16)
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+            val layout = LinearLayout(this@MainActivity)
+            return ItemViewHolder(layout)
+        }
+
+        override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+            val item = items[position]
+            holder.textView.text = if (item.isChecked) "ON" else "OFF"
+            holder.textView.setTextColor(if (item.isChecked) Color.GREEN else Color.RED)
+            holder.switchView.isChecked = item.isChecked
+
+            holder.switchView.setOnCheckedChangeListener { _, isChecked ->
+                item.isChecked = isChecked
+                holder.textView.text = if (isChecked) "ON" else "OFF"
+                holder.textView.setTextColor(if (isChecked) Color.GREEN else Color.RED)
+            }
+        }
+
+        override fun getItemCount() = items.size
+    }
+}
