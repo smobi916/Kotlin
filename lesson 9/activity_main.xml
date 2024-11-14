@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText android:id="@+id/groupNameInput"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Назва групи" />
+    <Button android:id="@+id/addGroupButton"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Додати групу" />
+
+    <EditText android:id="@+id/nameInput"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Ім'я студента" />
+    <EditText android:id="@+id/surnameInput"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Прізвище студента" />
+    <EditText android:id="@+id/ageInput"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Вік" android:inputType="number" />
+    <Spinner android:id="@+id/groupSpinner"
+        android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <Button android:id="@+id/addStudentButton"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Додати студента" />
+
+    <Spinner android:id="@+id/filterSpinner"
+        android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <ListView android:id="@+id/studentsListView"
+        android:layout_width="match_parent" android:layout_height="wrap_content" />
+</LinearLayout>
